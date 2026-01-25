@@ -1,16 +1,16 @@
 <#
 .SYNOPSIS
-    Service Fabric local cluster management and troubleshooting script.
+    Service Fabric cluster management and troubleshooting script.
 
 .DESCRIPTION
-    Provides commands for deploying, managing, and troubleshooting Service Fabric 
-    applications on a local development cluster.
+    Provides commands for deploying, managing, and troubleshooting Service Fabric
+    applications on local and remote clusters.
 
 .PARAMETER Command
     The command to execute. Available commands:
     
     Deployment:
-      deploy          - Build and deploy an application to local cluster
+      deploy          - Build and deploy an application to a cluster
       build           - Build application package only
       remove          - Remove application from cluster
     
@@ -60,9 +60,17 @@
 .PARAMETER Tail
     Number of lines to show from end of log (default: 50)
 
+.PARAMETER PublishProfile
+    Publish profile to use for deployment. Default: Local.1Node.xml
+    For remote clusters, use cluster-specific profiles (e.g., anz-ds5-dev-us-wus2-1.xml)
+
 .EXAMPLE
     .\sf-local.ps1 deploy SonarCoreApplication
     Build and deploy SonarCoreApplication to local cluster
+
+.EXAMPLE
+    .\sf-local.ps1 deploy SonarCoreApplication -PublishProfile anz-ds5-dev-us-wus2-1.xml
+    Build and deploy SonarCoreApplication to remote cluster with AAD authentication
 
 .EXAMPLE
     .\sf-local.ps1 health SonarCoreApplication
@@ -92,7 +100,9 @@ param(
     
     [int]$Tail = 50,
     
-    [string]$RootPath = $PWD.Path
+    [string]$RootPath = $PWD.Path,
+    
+    [string]$PublishProfile = "Local.1Node.xml"
 )
 
 $ErrorActionPreference = "Stop"
@@ -121,15 +131,15 @@ switch ($Command.ToLower()) {
     
     "deploy" {
         $AppName = $Arg1
-        if (-not $AppName) { Write-Error "Usage: sf-local.ps1 deploy <ApplicationName>"; exit 1 }
+        if (-not $AppName) { Write-Error "Usage: sf-local.ps1 deploy <ApplicationName> [-PublishProfile <Profile>]"; exit 1 }
         
         Write-Host "Building $AppName..." -ForegroundColor Cyan
         $sfproj = "$RootPath\Deployment\$AppName\$AppName.sfproj"
         & msbuild $sfproj /t:Package /p:Configuration=Release /p:Platform=x64 /v:m
         
         if ($LASTEXITCODE -eq 0) {
-            Write-Host "Deploying $AppName..." -ForegroundColor Cyan
-            & "$RootPath\Deployment\Scripts\Deploy-ServiceFabricApplication-Local.ps1" -ApplicationName $AppName
+            Write-Host "Deploying $AppName with profile $PublishProfile..." -ForegroundColor Cyan
+            & "$RootPath\Deployment\Scripts\Deploy-ServiceFabricApplication.ps1" -ApplicationName $AppName -PublishProfileFile $PublishProfile
         } else {
             Write-Error "Build failed"
         }
@@ -393,10 +403,12 @@ switch ($Command.ToLower()) {
     }
     
     default {
-        Write-Host "Service Fabric Local Management Script" -ForegroundColor Cyan
+        Write-Host "Service Fabric Cluster Management Script" -ForegroundColor Cyan
         Write-Host ""
         Write-Host "Deployment:" -ForegroundColor Yellow
-        Write-Host "  deploy <AppName>           Build and deploy application"
+        Write-Host "  deploy <AppName> [-PublishProfile <Profile>]"
+        Write-Host "                             Build and deploy application"
+        Write-Host "                             Default profile: Local.1Node.xml"
         Write-Host "  build <AppName>            Build application package only"
         Write-Host "  remove <AppName>           Remove application from cluster"
         Write-Host ""
@@ -430,6 +442,7 @@ switch ($Command.ToLower()) {
         Write-Host ""
         Write-Host "Examples:" -ForegroundColor Green
         Write-Host "  .\sf-local.ps1 deploy SonarCoreApplication"
+        Write-Host "  .\sf-local.ps1 deploy SonarCoreApplication -PublishProfile anz-ds5-dev-us-wus2-1.xml"
         Write-Host "  .\sf-local.ps1 health SonarCoreApplication"
         Write-Host "  .\sf-local.ps1 logs QueueService"
         Write-Host "  .\sf-local.ps1 db-query SonarQueue 'SELECT TOP 5 * FROM dbo.Message'"
