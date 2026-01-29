@@ -24,7 +24,7 @@ Brief introduction (2-3 paragraphs max). What it does and WHY it exists.
 Link to demo, website, or detailed docs if available.
 
 ## Architecture
-High-level design, component responsibilities, data flow. Use mermaid diagram for how components are defined and how they interact with each others.
+High-level design, component responsibilities, data flow. Use **mermaid diagram** for how components are defined and how they interact with each others.
 
 ## Features
 Key capabilities (bulleted list).
