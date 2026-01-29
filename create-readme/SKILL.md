@@ -1,6 +1,6 @@
 ---
 name: create-readme
-description: Create maintainable README files for services and projects. Use when asked to document a service, create a README, or explain a project's architecture. Focuses on lasting concepts (architectural patterns, design rationale, component responsibilities) rather than implementation details (class names, method signatures, line numbers) that change frequently.
+description: Create maintainable README files for services and projects. Use when asked to document a service, create a README, or explain a project's architecture.
 ---
 
 # Create README Skill
