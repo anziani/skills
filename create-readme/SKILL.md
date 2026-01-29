@@ -24,7 +24,7 @@ Brief introduction (2-3 paragraphs max). What it does and WHY it exists.
 Link to demo, website, or detailed docs if available.
 
 ## Architecture
-High-level design, component responsibilities, data flow. Use mermaid diagram for how components interact with each others.
+High-level design, component responsibilities, data flow. Use mermaid diagram for how components are defined and how they interact with each others.
 
 ## Features
 Key capabilities (bulleted list).
@@ -34,7 +34,6 @@ Required dependencies, tools, or environment setup.
 
 ## Usage
 Basic usage examples to get users productive quickly.
-
 
 ## See Also
 Links to related docs, APIs, or source files.
@@ -49,22 +48,27 @@ Apply web writing best practices (people scan, not read):
 - **Meaningful link text** - Never use "click here"; use descriptive text
 - **Highlight keywords** - Use **bold** for key terms (avoid underline)
 - **Inverted pyramid** - Start with the most important information
-- **Code blocks with syntax highlighting** - Specify language ```csharp```
-
+- **Code blocks with syntax highlighting** - Specify language with triple backticks
+  
 ## Content Guidelines
 
-| Include                               | Avoid                          |
-| ------------------------------------- | ------------------------------ |
-| Architectural patterns + rationale    | Specific class names           |
-| Component responsibilities (abstract) | Method signatures              |
-| Design decisions with WHY             | Line number references         |
-| Directory overview                    | Property/setting names         |
-| File links in "See Also"              | Package names (use categories) |
+Focus on the following:
+- Architectural patterns + rationale
+- Component responsibilities (abstract)
+- Design decisions with WHY 
+- File links in "See Also"
+- If project is a library, add produced packages
+Avoid:
+- Line number reference
+- Specific code that might change
+- Property/setting names
+
 
 ## Validation Checklist
 
-- [ ] Would renaming a class break this?
-- [ ] Would adding a parameter invalidate descriptions?
+- [ ] Does the project description explains well what the project is about?
+- [ ] Does the architecture section gives the readers a good overview of the service components?
+- [ ] Would adding or renaming a class, parameter or config invalidate descriptions?
 - [ ] Are design decisions explained with rationale?
 - [ ] Does Overview explain WHY this exists (not just WHAT)?
 - [ ] Are usage steps complete with installation and prerequisites?
