@@ -141,12 +141,7 @@ Options:
 1. **Push branch:** Run `git push -u origin <branch_name>` if not already pushed.
 2. **Create PR:** Run the script with the saved description file:
    ```powershell
-   pwsh .roo/skills/create-pr/scripts/New-PullRequest.ps1 `
-     -Title "<commit_message>" `
-     -DescriptionFile ".ai/pullrequests/<branch_name>.md" `
-     -SourceBranch "<branch_name>" `
-     -TargetBranch "master" `
-     -WorkItemId <work_item_id>  # Optional
+   pwsh -Command "& '~\.roo\skills\create-pr\scripts\New-PullRequest.ps1' -Title '<title>' -DescriptionFile '.ai/pullrequests/<branch_name>.md' -SourceBranch '<branch_name>' -TargetBranch 'master' -WorkItemId <work_item_id"
    ```
 3. **Report result:** Display the PR URL to the user.
 
