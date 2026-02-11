@@ -1,6 +1,6 @@
 ---
 name: create-pr
-description: Create a pull request from the current branch against master. Generates commit message from git diff, fills PR description template, and creates PR via Azure CLI.
+description: Create a pull request from the current branch against master or main. Generates commit message from git diff, fills PR description template, creates a work item if requested and creates PR via Azure CLI.
 ---
 
 # Create Pull Request Skill
@@ -11,6 +11,7 @@ description: Create a pull request from the current branch against master. Gener
 
 - Azure CLI installed with `azure-devops` extension
 - User authenticated via `az login`
+- Azure DevOps MCP
 - Current branch has commits ahead of master
 - Remote repository configured
 
@@ -18,9 +19,14 @@ description: Create a pull request from the current branch against master. Gener
 
 ### 1. Validate Current State
 
-1. **Get current branch:** Run `git branch --show-current` and store the branch name.
-2. **Verify not on master:** If branch is `master` or `main`, inform user and abort.
-3. **Check for staged changes:** Run `git diff --cached --name-only`.
+1. **Verify not on master:** If branch is `master` or `main`, ensure there are commits ahead of the target branch:
+   - Run `git rev-list --count master..HEAD`
+   - If count is 0, inform user and abort:
+     ```
+     Your branch is up to date with master. Please make some commits before creating a PR.
+     ```
+   - If commits exist, create a new branch with format <username>/<name>
+2. **Check for staged changes:** Run `git diff --cached --name-only`.
    - If no staged changes exist, inform the user and use `ask_followup_question`:
      ```
      No staged changes found. Please stage the changes you want to include in this PR.
@@ -42,7 +48,7 @@ description: Create a pull request from the current branch against master. Gener
 
 ### 3. Fill PR Description Template
 
-Use the template from `.azuredevops/pull_request_template.md` and fill in:
+If a template exists at `.azuredevops/pull_request_template.md`, use it, otherwise create a new description with the following structure:
 
 1. **Type:** Determine from the changes (Bug fix / New feature / Migate Component Governance Alert / Other)
 2. **Why:** Explain the reason for the change based on the diff analysis
@@ -60,8 +66,7 @@ After generating the PR description, save it to a markdown file for user review 
 2. **Inform user:** Let the user know the PR description has been saved and they can edit it before proceeding
 
 ### 4. Link Work Item
-
-Use `ask_followup_question` to ask about work item linking:
+If user already mentioned to create a work item, skip asking and create it. Otherwise, use `ask_followup_question` to ask about work item linking:
 
 ```
 Would you like to link a work item to this PR?
@@ -139,9 +144,9 @@ Options:
 ### 6. Create Pull Request
 
 1. **Push branch:** Run `git push -u origin <branch_name>` if not already pushed.
-2. **Create PR:** Run the script with the saved description file:
+2. **Create PR:** Run the script located within the skill folder with the saved description file:
    ```powershell
-   pwsh -Command "& '~\.roo\skills\create-pr\scripts\New-PullRequest.ps1' -Title '<title>' -DescriptionFile '.ai/pullrequests/<branch_name>.md' -SourceBranch '<branch_name>' -TargetBranch 'master' -WorkItemId <work_item_id"
+   pwsh -Command "& '.\scripts\New-PullRequest.ps1' -Title '<title>' -DescriptionFile '.ai/pullrequests/<branch_name>.md' -SourceBranch '<branch_name>' -TargetBranch 'master' -WorkItemId <work_item_id"
    ```
 3. **Report result:** Display the PR URL to the user.
 
@@ -158,6 +163,7 @@ After successful PR creation:
 |-------|------------|
 | Not logged in to Azure CLI | Prompt user to run `az login` |
 | No commits ahead of master | Inform user branch is up to date |
+| Azure DevOps MCP tools not available | Inform user to install Azure DevOps MCP |
 | Push fails | Check remote permissions, branch protection |
 | PR creation fails | Display Azure DevOps error message |
 | Work item not found | Ask user to verify the work item ID |
