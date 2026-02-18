@@ -6,12 +6,21 @@ allowed-tools: Bash(playwright-cli:*)
 
 # Browser Automation with playwright-cli
 
+## IMPORTANT: Always Use Persistent Profile with Chrome
+
+**Always** use `--persistent --browser=chrome` when opening a browser. This ensures:
+- Microsoft SSO authentication works automatically (for Azure DevOps, Azure Portal, https://eng.ms, etc.)
+- User's existing browser session/cookies are reused
+- No manual login required for authenticated sites
+
 ## Quick start
 
 ```bash
-# open new browser
-playwright-cli open
-# navigate to a page
+# open new browser with persistent profile (ALWAYS use this pattern)
+playwright-cli open --persistent --browser=chrome
+# navigate to a page (with auth preserved)
+playwright-cli open https://playwright.dev --persistent --browser=chrome
+# OR navigate after opening
 playwright-cli goto https://playwright.dev
 # interact with the page using refs from the snapshot
 playwright-cli click e15
@@ -23,14 +32,17 @@ playwright-cli screenshot
 playwright-cli close
 ```
 
+> **Note:** The `--browser=msedge` option may fail with "Browser window not found" errors in headless mode. Use Chrome instead.
+
 ## Commands
 
 ### Core
 
 ```bash
-playwright-cli open
-# open and navigate right away
-playwright-cli open https://example.com/
+# ALWAYS use --persistent --browser=chrome for Microsoft SSO auth support
+playwright-cli open --persistent --browser=chrome
+# open and navigate right away (with auth)
+playwright-cli open https://example.com/ --persistent --browser=chrome
 playwright-cli goto https://playwright.dev
 playwright-cli type "search query"
 playwright-cli click e3
@@ -164,18 +176,21 @@ playwright-cli install-browser
 
 ### Configuration
 ```bash
-# Use specific browser when creating session
-playwright-cli open --browser=chrome
+# RECOMMENDED: Use Chrome with persistent profile for Microsoft auth
+playwright-cli open --persistent --browser=chrome
+
+# Other browser options (not recommended for Microsoft sites)
 playwright-cli open --browser=firefox
 playwright-cli open --browser=webkit
+# NOTE: msedge may fail with "Browser window not found" errors in headless mode
 playwright-cli open --browser=msedge
 # Connect to browser via extension
 playwright-cli open --extension
 
-# Use persistent profile (by default profile is in-memory)
-playwright-cli open --persistent
+# Persistent profile preserves auth tokens (RECOMMENDED)
+playwright-cli open --persistent --browser=chrome
 # Use persistent profile with custom directory
-playwright-cli open --profile=/path/to/profile
+playwright-cli open --profile=/path/to/profile --browser=chrome
 
 # Start with config file
 playwright-cli open --config=my-config.json
@@ -189,10 +204,10 @@ playwright-cli delete-data
 ### Browser Sessions
 
 ```bash
-# create new browser session named "mysession" with persistent profile
-playwright-cli -s=mysession open example.com --persistent
+# create new browser session named "mysession" with persistent profile and Chrome
+playwright-cli -s=mysession open example.com --persistent --browser=chrome
 # same with manually specified profile directory (use when requested explicitly)
-playwright-cli -s=mysession open example.com --profile=/path/to/profile
+playwright-cli -s=mysession open example.com --profile=/path/to/profile --browser=chrome
 playwright-cli -s=mysession click e6
 playwright-cli -s=mysession close  # stop a named browser
 playwright-cli -s=mysession delete-data  # delete user data for persistent session
@@ -207,7 +222,7 @@ playwright-cli kill-all
 ## Example: Form submission
 
 ```bash
-playwright-cli open https://example.com/form
+playwright-cli open https://example.com/form --persistent --browser=chrome
 playwright-cli snapshot
 
 playwright-cli fill e1 "user@example.com"
@@ -220,7 +235,7 @@ playwright-cli close
 ## Example: Multi-tab workflow
 
 ```bash
-playwright-cli open https://example.com
+playwright-cli open https://example.com --persistent --browser=chrome
 playwright-cli tab-new https://example.com/other
 playwright-cli tab-list
 playwright-cli tab-select 0
@@ -231,7 +246,7 @@ playwright-cli close
 ## Example: Debugging with DevTools
 
 ```bash
-playwright-cli open https://example.com
+playwright-cli open https://example.com --persistent --browser=chrome
 playwright-cli click e4
 playwright-cli fill e7 "test"
 playwright-cli console
@@ -240,7 +255,7 @@ playwright-cli close
 ```
 
 ```bash
-playwright-cli open https://example.com
+playwright-cli open https://example.com --persistent --browser=chrome
 playwright-cli tracing-start
 playwright-cli click e4
 playwright-cli fill e7 "test"

@@ -14,7 +14,7 @@ description: Address PR comments from Azure DevOps pull requests. Fetches active
 Run the script to fetch active (unresolved) PR comments:
 
 ```powershell
-pwsh .roo/skills/address-pr-comments/scripts/Get-PullRequestComments.ps1 -PullRequestUrl "<url>"
+pwsh .\scripts\Get-PullRequestComments.ps1 -PullRequestUrl "<url>"
 ```
 
 The script returns a JSON array of comments with:
