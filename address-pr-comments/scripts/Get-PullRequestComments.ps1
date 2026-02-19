@@ -28,11 +28,26 @@ $org, $project, $repo, $prId = $Matches[1..4]
 
 Write-Host "Fetching comments for PR #$prId..." -ForegroundColor Cyan
 
-# Helper to call Azure DevOps REST API
+# Helper to call Azure DevOps REST API using Invoke-RestMethod with Azure CLI token
 function Invoke-AzDoApi($url) {
-    $response = az rest --method get --url $url --resource $AzureDevOpsResource 2>&1
-    if ($LASTEXITCODE -ne 0) { throw "API call failed. Run 'az login'. Error: $response" }
-    $response | ConvertFrom-Json
+    # Get access token for Azure DevOps
+    $token = az account get-access-token --resource $AzureDevOpsResource --query accessToken -o tsv 2>$null
+    if ($LASTEXITCODE -ne 0 -or -not $token) {
+        throw "Failed to acquire access token. Run 'az login' to authenticate."
+    }
+
+    $headers = @{
+        Authorization = "Bearer $token"
+    }
+
+    try {
+        $result = Invoke-RestMethod -Uri $url -Headers $headers -Method Get -ContentType 'application/json'
+        return $result
+    }
+    catch {
+        $statusCode = $_.Exception.Response.StatusCode
+        throw "API call to '$url' failed with status $statusCode. Error: $_"
+    }
 }
 
 # Fetch PR and threads
@@ -64,7 +79,7 @@ function Get-Summary($text, $maxLen = 100) {
 # Helper to extract plain text from system comments (AI Code Review)
 function Get-PlainContent($comment) {
     $content = $comment.content
-    if ($comment.commentType -eq 'system' -and $content -match '(?s)</small>\s*\n\s*\n(.+?)(?:\nHere is the suggested code:|<table|\n```)') {
+    if ($comment.commentType -eq 'system' -and $content -match '(?s)</small>\s*\n\s*\n(.+?)(?:\nHere is the suggested code.|<table|\n```)') {
         return $Matches[1].Trim()
     }
     $content

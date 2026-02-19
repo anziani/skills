@@ -14,10 +14,10 @@ description: Address PR comments from Azure DevOps pull requests. Fetches active
 Run the script to fetch active (unresolved) PR comments:
 
 ```powershell
-pwsh .\scripts\Get-PullRequestComments.ps1 -PullRequestUrl "<url>"
+pwsh -Command "$scriptPath = Join-Path $env:USERPROFILE '.roo\skills\address-pr-comments\scripts\Get-PullRequestComments.ps1'; & $scriptPath -PullRequestUrl '<url>'"
 ```
 
-The script returns a JSON array of comments with:
+The script returns a JSON object with PR metadata and a `Comments` array. Each comment contains:
 - `ThreadId` - Unique thread identifier
 - `CommentId` - Comment identifier
 - `Author` - Who posted the comment
@@ -95,9 +95,10 @@ Only after user confirmation:
 ## Script Requirements
 
 The [`Get-PullRequestComments.ps1`](scripts/Get-PullRequestComments.ps1) script:
-- Uses Azure CLI (`az repos pr thread list`)
+- Acquires an Azure AD token via `az account get-access-token` for the Azure DevOps resource
+- Calls Azure DevOps REST API using `Invoke-RestMethod` with Bearer token authentication
 - Filters to active (unresolved) threads only
-- Returns structured JSON for processing
+- Returns structured JSON with PR metadata (`PullRequestId`, `Title`, `Author`, `SourceBranch`, `TargetBranch`) and a `Comments` array
 
 ## Output Files
 
@@ -109,8 +110,9 @@ The [`Get-PullRequestComments.ps1`](scripts/Get-PullRequestComments.ps1) script:
 - If no active comments found, inform user: "No active (unresolved) comments found on this PR."
 - If Azure CLI not authenticated, provide guidance: "Run `az login` to authenticate."
 - If PR URL is invalid, show expected format.
+- If token acquisition fails, the script throws with a clear message to run `az login`.
 
 ## References
 
-- Uses same Azure CLI authentication as [`code-review`](../code-review/SKILL.md) skill
-- PR comments API: `az repos pr thread list`
+- Requires Azure CLI (`az`) for token acquisition only
+- Uses Azure DevOps REST API: `GET _apis/git/repositories/{repo}/pullrequests/{id}/threads?api-version=7.1`
