@@ -19,6 +19,10 @@ This skill supports deploying Service Fabric applications to both local developm
 - Troubleshoot/debug a locally running Service Fabric application
 - Iterate on code changes with repeated build-deploy-verify cycles
 
+**IMPORTANT**: Use the `sf.ps1` script from the user profile skills directory based on which agent you are by replacing the token `[REPLACE_ME]` with the appropriate path:
+- If you are _Roo_ based agent, use: `$scriptPath = "~\.roo\skills\service-fabric\scripts\sf.ps1"`
+- If you are _GitHub Copilot_ based agent, use: `$scriptPath = "~\.copilot\skills\service-fabric\scripts\sf.ps1"`
+
 ## Prerequisites
 
 1. **Local cluster:** Service Fabric Local Cluster Manager running (system tray)
@@ -48,16 +52,15 @@ Ask the user which application to deploy if not specified. Available application
 
 ### Step 2: Build and Deploy (Local Cluster)
 
-Use the `sf.ps1` script to build and deploy in one command. **Run this from the repo root directory:**
 
 ```powershell
-pwsh -Command "& '$env:USERPROFILE\.roo\skills\sf-local-deploy-troubleshoot\scripts\sf.ps1' deploy <ApplicationName>"
+pwsh -Command "$scriptPath = [REPLACE_ME]; & $scriptPath deploy <ApplicationName>"
 ```
 
 To build the package only (without deploying):
 
 ```powershell
-pwsh -Command "& '$env:USERPROFILE\.roo\skills\sf-local-deploy-troubleshoot\scripts\sf.ps1' build <ApplicationName>"
+pwsh -Command "$scriptPath = [REPLACE_ME]; & $scriptPath build <ApplicationName>"
 ```
 
 ### Step 3: Verify Deployment
@@ -72,7 +75,7 @@ The script automatically verifies services are ready. You can also check:
 To deploy to a remote Azure cluster, use the `-PublishProfile` parameter with a cluster-specific profile:
 
 ```powershell
-pwsh -Command "& '$env:USERPROFILE\.roo\skills\sf-local-deploy-troubleshoot\scripts\sf.ps1' deploy <ApplicationName> -PublishProfile <ClusterProfile>.xml"
+pwsh -Command "$scriptPath = [REPLACE_ME]; & $scriptPath deploy <ApplicationName> -PublishProfile <ClusterProfile>.xml"
 ```
 
 The script will:
@@ -86,22 +89,22 @@ The script will:
 
 **Deploy to local cluster (default):**
 ```powershell
-pwsh -Command "& '$env:USERPROFILE\.roo\skills\sf-local-deploy-troubleshoot\scripts\sf.ps1' deploy SonarCoreApplication"
+pwsh -Command "$scriptPath = [REPLACE_ME]; & $scriptPath deploy SonarCoreApplication"
 ```
 
 **Deploy to remote cluster:**
 ```powershell
-pwsh -Command "& '$env:USERPROFILE\.roo\skills\sf-local-deploy-troubleshoot\scripts\sf.ps1' deploy SonarCoreApplication -PublishProfile anz-ds5-dev-us-wus2-1.xml"
+pwsh -Command "$scriptPath = [REPLACE_ME]; & $scriptPath deploy SonarCoreApplication -PublishProfile anz-ds5-dev-us-wus2-1.xml"
 ```
 
 **Build only (no deploy):**
 ```powershell
-pwsh -Command "& '$env:USERPROFILE\.roo\skills\sf-local-deploy-troubleshoot\scripts\sf.ps1' build PlatformApplication"
+pwsh -Command "$scriptPath = [REPLACE_ME]; & $scriptPath build PlatformApplication"
 ```
 
 **Remove application from cluster:**
 ```powershell
-pwsh -Command "& '$env:USERPROFILE\.roo\skills\sf-local-deploy-troubleshoot\scripts\sf.ps1' remove ToolsetApplication"
+pwsh -Command "$scriptPath = [REPLACE_ME]; & $scriptPath remove ToolsetApplication"
 ```
 
 ---
@@ -114,43 +117,43 @@ All cluster commands are available through the `sf.ps1` script, which handles cl
 
 **List all applications:**
 ```powershell
-pwsh -Command "& '$env:USERPROFILE\.roo\skills\sf-local-deploy-troubleshoot\scripts\sf.ps1' apps"
+pwsh -Command "$scriptPath = [REPLACE_ME]; & $scriptPath apps"
 ```
 
 **Remove application:**
 ```powershell
-pwsh -Command "& '$env:USERPROFILE\.roo\skills\sf-local-deploy-troubleshoot\scripts\sf.ps1' remove <ApplicationName>"
+pwsh -Command "$scriptPath = [REPLACE_ME]; & $scriptPath remove <ApplicationName>"
 ```
 
 ### Service Management
 
 **List services in an application:**
 ```powershell
-pwsh -Command "& '$env:USERPROFILE\.roo\skills\sf-local-deploy-troubleshoot\scripts\sf.ps1' services <ApplicationName>"
+pwsh -Command "$scriptPath = [REPLACE_ME]; & $scriptPath services <ApplicationName>"
 ```
 
 ### Health Queries
 
 **Get application health summary:**
 ```powershell
-pwsh -Command "& '$env:USERPROFILE\.roo\skills\sf-local-deploy-troubleshoot\scripts\sf.ps1' health <ApplicationName>"
+pwsh -Command "$scriptPath = [REPLACE_ME]; & $scriptPath health <ApplicationName>"
 ```
 
 **Get service health:**
 ```powershell
-pwsh -Command "& '$env:USERPROFILE\.roo\skills\sf-local-deploy-troubleshoot\scripts\sf.ps1' health <ApplicationName> <ServiceName>"
+pwsh -Command "$scriptPath = [REPLACE_ME]; & $scriptPath health <ApplicationName> <ServiceName>"
 ```
 
 ### Node and Cluster Info
 
 **List cluster nodes:**
 ```powershell
-pwsh -Command "& '$env:USERPROFILE\.roo\skills\sf-local-deploy-troubleshoot\scripts\sf.ps1' nodes"
+pwsh -Command "$scriptPath = [REPLACE_ME]; & $scriptPath nodes"
 ```
 
 **Get cluster health:**
 ```powershell
-pwsh -Command "& '$env:USERPROFILE\.roo\skills\sf-local-deploy-troubleshoot\scripts\sf.ps1' cluster-health"
+pwsh -Command "$scriptPath = [REPLACE_ME]; & $scriptPath cluster-health"
 ```
 
 ---
@@ -172,51 +175,51 @@ Services use local SQL Server databases. Connection strings are in `appsettings.
 
 **List all Sonar databases:**
 ```powershell
-pwsh -Command "& '$env:USERPROFILE\.roo\skills\sf-local-deploy-troubleshoot\scripts\sf.ps1' db-list"
+pwsh -Command "$scriptPath = [REPLACE_ME]; & $scriptPath db-list"
 ```
 
 **List tables in a database:**
 ```powershell
-pwsh -Command "& '$env:USERPROFILE\.roo\skills\sf-local-deploy-troubleshoot\scripts\sf.ps1' db-tables <DatabaseName>"
+pwsh -Command "$scriptPath = [REPLACE_ME]; & $scriptPath db-tables <DatabaseName>"
 ```
 
 **Get table schema (columns and types):**
 ```powershell
-pwsh -Command "& '$env:USERPROFILE\.roo\skills\sf-local-deploy-troubleshoot\scripts\sf.ps1' db-schema <DatabaseName> <TableName>"
+pwsh -Command "$scriptPath = [REPLACE_ME]; & $scriptPath db-schema <DatabaseName> <TableName>"
 ```
 
 **List stored procedures:**
 ```powershell
-pwsh -Command "& '$env:USERPROFILE\.roo\skills\sf-local-deploy-troubleshoot\scripts\sf.ps1' db-procs <DatabaseName>"
+pwsh -Command "$scriptPath = [REPLACE_ME]; & $scriptPath db-procs <DatabaseName>"
 ```
 
 **View stored procedure code:**
 ```powershell
-pwsh -Command "& '$env:USERPROFILE\.roo\skills\sf-local-deploy-troubleshoot\scripts\sf.ps1' db-proc-code <DatabaseName> <ProcedureName>"
+pwsh -Command "$scriptPath = [REPLACE_ME]; & $scriptPath db-proc-code <DatabaseName> <ProcedureName>"
 ```
 
 ### Data Queries
 
 **Execute SQL query:**
 ```powershell
-pwsh -Command "& '$env:USERPROFILE\.roo\skills\sf-local-deploy-troubleshoot\scripts\sf.ps1' db-query <DatabaseName> '<SQL Query>'"
+pwsh -Command "$scriptPath = [REPLACE_ME]; & $scriptPath db-query <DatabaseName> '<SQL Query>'"
 ```
 
 ### Common Database Queries
 
 **SonarQueue - View queue messages:**
 ```powershell
-pwsh -Command "& '$env:USERPROFILE\.roo\skills\sf-local-deploy-troubleshoot\scripts\sf.ps1' db-query SonarQueue 'SELECT MessageId, QueueName, State, Label, LEN(Data) as DataLen FROM dbo.Message ORDER BY MessageId DESC'"
+pwsh -Command "$scriptPath = [REPLACE_ME]; & $scriptPath db-query SonarQueue 'SELECT MessageId, QueueName, State, Label, LEN(Data) as DataLen FROM dbo.Message ORDER BY MessageId DESC'"
 ```
 
 **SonarQueue - View messages in specific queue:**
 ```powershell
-pwsh -Command "& '$env:USERPROFILE\.roo\skills\sf-local-deploy-troubleshoot\scripts\sf.ps1' db-query SonarQueue 'SELECT MessageId, State, DequeueCount, Label FROM dbo.Message WHERE QueueName = ''<QueueName>'' ORDER BY MessageId'"
+pwsh -Command "$scriptPath = [REPLACE_ME]; & $scriptPath db-query SonarQueue 'SELECT MessageId, State, DequeueCount, Label FROM dbo.Message WHERE QueueName = ''<QueueName>'' ORDER BY MessageId'"
 ```
 
 **SonarBlob - View blob metadata:**
 ```powershell
-pwsh -Command "& '$env:USERPROFILE\.roo\skills\sf-local-deploy-troubleshoot\scripts\sf.ps1' db-query SonarBlob 'SELECT TOP 10 BlobName, Length, LastUpdateDate FROM dbo.Blob ORDER BY LastUpdateDate DESC'"
+pwsh -Command "$scriptPath = [REPLACE_ME]; & $scriptPath db-query SonarBlob 'SELECT TOP 10 BlobName, Length, LastUpdateDate FROM dbo.Blob ORDER BY LastUpdateDate DESC'"
 ```
 
 ---
@@ -236,44 +239,44 @@ pwsh -Command "& '$env:USERPROFILE\.roo\skills\sf-local-deploy-troubleshoot\scri
 
 **View recent logs for a service:**
 ```powershell
-pwsh -Command "& '$env:USERPROFILE\.roo\skills\sf-local-deploy-troubleshoot\scripts\sf.ps1' logs <ServiceName>"
+pwsh -Command "$scriptPath = [REPLACE_ME]; & $scriptPath logs <ServiceName>"
 ```
 
 **View with custom tail count:**
 ```powershell
-pwsh -Command "& '$env:USERPROFILE\.roo\skills\sf-local-deploy-troubleshoot\scripts\sf.ps1' logs <ServiceName> 100"
+pwsh -Command "$scriptPath = [REPLACE_ME]; & $scriptPath logs <ServiceName> 100"
 ```
 
 **Search logs for pattern:**
 ```powershell
-pwsh -Command "& '$env:USERPROFILE\.roo\skills\sf-local-deploy-troubleshoot\scripts\sf.ps1' logs-search <ServiceName> '<Pattern>'"
+pwsh -Command "$scriptPath = [REPLACE_ME]; & $scriptPath logs-search <ServiceName> '<Pattern>'"
 ```
 
 **Search for errors in logs:**
 ```powershell
-pwsh -Command "& '$env:USERPROFILE\.roo\skills\sf-local-deploy-troubleshoot\scripts\sf.ps1' logs-errors <ServiceName>"
+pwsh -Command "$scriptPath = [REPLACE_ME]; & $scriptPath logs-errors <ServiceName>"
 ```
 
 **Watch logs in real-time:**
 ```powershell
-pwsh -Command "& '$env:USERPROFILE\.roo\skills\sf-local-deploy-troubleshoot\scripts\sf.ps1' logs-watch <ServiceName>"
+pwsh -Command "$scriptPath = [REPLACE_ME]; & $scriptPath logs-watch <ServiceName>"
 ```
 
 ### Windows Event Logs
 
 **View .NET Runtime errors:**
 ```powershell
-pwsh -Command "& '$env:USERPROFILE\.roo\skills\sf-local-deploy-troubleshoot\scripts\sf.ps1' events"
+pwsh -Command "$scriptPath = [REPLACE_ME]; & $scriptPath events"
 ```
 
 **View Service Fabric events:**
 ```powershell
-pwsh -Command "& '$env:USERPROFILE\.roo\skills\sf-local-deploy-troubleshoot\scripts\sf.ps1' sf-events"
+pwsh -Command "$scriptPath = [REPLACE_ME]; & $scriptPath sf-events"
 ```
 
 **Filter events by application:**
 ```powershell
-pwsh -Command "& '$env:USERPROFILE\.roo\skills\sf-local-deploy-troubleshoot\scripts\sf.ps1' sf-events <ApplicationName>"
+pwsh -Command "$scriptPath = [REPLACE_ME]; & $scriptPath sf-events <ApplicationName>"
 ```
 
 ---
@@ -283,14 +286,14 @@ pwsh -Command "& '$env:USERPROFILE\.roo\skills\sf-local-deploy-troubleshoot\scri
 ### Build and Deploy (One-Liner)
 
 ```powershell
-pwsh -Command "& '$env:USERPROFILE\.roo\skills\sf-local-deploy-troubleshoot\scripts\sf.ps1' deploy <AppName>"
+pwsh -Command "$scriptPath = [REPLACE_ME]; & $scriptPath deploy <AppName>"
 ```
 
 ### Check Configuration
 
 **View service configuration (appsettings.local.json and Settings.xml):**
 ```powershell
-pwsh -Command "& '$env:USERPROFILE\.roo\skills\sf-local-deploy-troubleshoot\scripts\sf.ps1' config <ServiceName>"
+pwsh -Command "$scriptPath = [REPLACE_ME]; & $scriptPath config <ServiceName>"
 ```
 
 ---

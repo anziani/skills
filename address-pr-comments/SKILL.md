@@ -13,9 +13,15 @@ description: Address PR comments from Azure DevOps pull requests. Fetches active
 
 Run the script to fetch active (unresolved) PR comments:
 
-```powershell
-pwsh -Command "$scriptPath = Join-Path $env:USERPROFILE '.roo\skills\address-pr-comments\scripts\Get-PullRequestComments.ps1'; & $scriptPath -PullRequestUrl '<url>'"
-```
+- If you are _Roo_ based agent, run:
+  ```powershell
+  pwsh -Command "$scriptPath = Join-Path $env:USERPROFILE '.roo\skills\address-pr-comments\scripts\Get-PullRequestComments.ps1'; & $scriptPath -PullRequestUrl '<url>'"
+  ```
+
+- If you are _GitHub Copilot_ based agent, run:
+  ```powershell
+  pwsh -Command "$scriptPath = Join-Path $env:USERPROFILE '.copilot\skills\address-pr-comments\scripts\Get-PullRequestComments.ps1'; & $scriptPath -PullRequestUrl '<url>'"
+  ```
 
 The script returns a JSON object with PR metadata and a `Comments` array. Each comment contains:
 - `ThreadId` - Unique thread identifier
