@@ -29,15 +29,18 @@ Use `git diff` commands to examine changes efficiently:
 
 ### After Review
 1. **Save the review:** Write the review to `.ai/code-reviews/review-<branch>-<pr-number>.md` (create the directory if needed).
-2. **Confirm with user:** Use `ask_followup_question` to confirm the user is satisfied with the review:
-   - "Yes, I'm satisfied. Return to original branch."
-   - "No, I want to stay on this branch to validate the review."
-   - "I have feedback on the review."
-3. **If user confirms satisfaction:**
-   - Run `git checkout <original-branch>`.
+2. **Save comments as JSON:** Write the structured comments to `.ai/code-reviews/comments-<pr-number>.json` for posting (see [Comment JSON Format](#comment-json-format)).
+3. **Present numbered summary:** Display a numbered table of all comments with severity, file, and one-line description.
+4. **Ask to post comments:** Use `ask_followup_question` to let the user choose which comments to post:
+   - "Post all comments to the PR"
+   - "Post specific comments (e.g. 1,2,4)"
+   - "Don't post any comments, just keep the review file"
+   - "I have feedback on the review"
+5. **Post selected comments:** Run the posting script with the user's selection (see [Posting Comments to PR](#posting-comments-to-pr)).
+6. **Return to original branch:**
+   - If on a different branch, run `git checkout <original-branch>`.
    - If stashed earlier, run `git stash pop` to restore changes.
-   - Inform user: review complete, file saved, returned to original branch, changes restored (if applicable).
-4. **If user wants to stay:** Leave them on the PR branch and inform them how to return manually.
+   - Inform user: review complete, file saved, comments posted, returned to original branch.
 
 
 ## Review Process
@@ -88,6 +91,53 @@ After completing the review, save it to a markdown file:
 - **Location:** `.ai/code-reviews/review-<branch>-<pr-number>.md`
 - **Naming:** Use sanitized branch name (replace `/` with `-`) and PR number
 
+## Comment JSON Format
+
+After completing the review, save structured comments to a JSON file for posting:
+- **Location:** `.ai/code-reviews/comments-<pr-number>.json`
+- **Format:** JSON array of comment objects:
+
+```json
+[
+  {
+    "filePath": "/path/to/File.cs",
+    "line": 42,
+    "content": ":x: **[Category] Title**\n\nDetailed explanation of the issue.\n\n**Fix:** Suggested resolution."
+  }
+]
+```
+
+### Field reference
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `filePath` | string | Yes | File path relative to repo root, **prefixed with `/`** |
+| `line` | int | Yes | Line number in the right-side diff to attach the comment |
+| `content` | string | Yes | Markdown comment body |
+| `status` | int | No | Thread status: 1=Active (default), 2=Fixed, 3=WontFix, 4=Closed |
+
+### Emoji conventions for severity
+
+| Severity | Emoji | Usage |
+|----------|-------|-------|
+| Blocking | `:x:` | Must fix before merge |
+| Warning | `:warning:` | Should fix, but non-blocking |
+| Suggestion | `:bulb:` | Nice-to-have improvement |
+
+## Posting Comments to PR
+
+Use the script at `.roo/skills/code-review/scripts/Post-ReviewComments.ps1` to post review comments.
+
+### Post all comments
+```powershell
+pwsh .roo/skills/code-review/scripts/Post-ReviewComments.ps1 -PullRequestUrl "<url>" -CommentsFile ".ai/code-reviews/comments-<pr-number>.json"
+```
+
+### Post specific comments (by 1-based index)
+```powershell
+pwsh .roo/skills/code-review/scripts/Post-ReviewComments.ps1 -PullRequestUrl "<url>" -CommentsFile ".ai/code-reviews/comments-<pr-number>.json" -CommentNumbers "1,3,5"
+```
+
 ## Review Checklist
 
 Use this checklist during every review to ensure high-quality feedback:
@@ -99,3 +149,5 @@ Use this checklist during every review to ensure high-quality feedback:
 - [ ] **Clear review status** — Approve, Request Changes, or Block with reason.
 - [ ] **Rationale provided** — Does each comment explain *why*, not just *what*?
 - [ ] **Review saved** — Is the review written to `.ai/code-reviews/` directory?
+- [ ] **Comments JSON saved** — Are comments saved as `.ai/code-reviews/comments-<pr-number>.json`?
+- [ ] **User chose which to post** — Did you ask the user which comments to post?
