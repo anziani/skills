@@ -9,10 +9,9 @@ description: Create a pull request from the current branch against master or mai
 
 ## Prerequisites
 
-- Azure CLI installed with `azure-devops` extension
 - User authenticated via `az login`
 - Azure DevOps MCP
-- Current branch has commits ahead of master
+- Current branch has commits ahead of master or main
 - Remote repository configured
 
 ## Workflow
@@ -39,9 +38,8 @@ description: Create a pull request from the current branch against master or mai
 ### 2. Generate Commit Message
 
 1. **Fetch latest master:** Run `git fetch origin master`.
-2. **Get staged diff stats:** Run `git diff --cached --stat` to see staged files.
-3. **Analyze staged changes:** Run `git diff --cached` to understand the staged changes.
-4. **Generate message:** Create a concise 1-sentence commit message summarizing the staged changes.
+2. **Analyze staged changes with diff stats:** Run `git diff --cached --stat` to see staged files, and `git diff --cached` to understand the staged changes.
+3. **Generate message:** Create a concise 1-sentence commit message summarizing the staged changes.
    - Focus on the *what* and *why*
    - Use imperative mood (e.g., "Add feature X" not "Added feature X")
    - Keep under 72 characters if possible
@@ -73,7 +71,7 @@ Would you like to link a work item to this PR?
 ```
 
 Options:
-- "Yes, I'll provide the work item ID or URL"
+- "Enter the work item ID or URL and Submit"
 - "Yes, create a new work item automatically"
 - "No, skip work item linking"
 
@@ -145,9 +143,16 @@ Options:
 
 1. **Push branch:** Run `git push -u origin <branch_name>` if not already pushed.
 2. **Create PR:** Run the script located within the skill folder with the saved description file:
+   - If you are _Roo_ based agent, run:
    ```powershell
-   pwsh -Command "& '.\scripts\New-PullRequest.ps1' -Title '<title>' -DescriptionFile '.ai/pullrequests/<branch_name>.md' -SourceBranch '<branch_name>' -TargetBranch 'master' -WorkItemId <work_item_id"
+   pwsh -C "& $($env:USERPROFILE)\.roo\skills\create-pr\scripts\New-PullRequest.ps1' -Title '<title>' -DescriptionFile '.ai/pullrequests/<branch_name>.md' -SourceBranch '<branch_name>' -TargetBranch 'master' -WorkItemId <work_item_id"
    ```
+   
+   If you are _GitHub Copilot_ based agent, run:
+   ```powershell
+   pwsh -C "& $($env:USERPROFILE)\.copilot\skills\create-pr\scripts\New-PullRequest.ps1' -Title '<title>' -DescriptionFile '.ai/pullrequests/<branch_name>.md' -SourceBranch '<branch_name>' -TargetBranch 'master' -WorkItemId <work_item_id"
+   ```
+   
 3. **Report result:** Display the PR URL to the user.
 
 ## Output
@@ -168,6 +173,7 @@ After successful PR creation:
 | PR creation fails | Display Azure DevOps error message |
 | Work item not found | Ask user to verify the work item ID |
 | Work item creation fails | Proceed without work item, inform user |
+| Script not found | Search for it recursively in the skill folder matching path `$env:USERPROFILE\*\skills\create-pr\scripts` |
 
 ## Configuration
 
